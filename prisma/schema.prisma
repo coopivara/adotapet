@@ -15,8 +15,10 @@ model User {
   id        String    @id @default(uuid())
   email     String    @unique
   name      String
-  document  String
-  documentType String
+  cpf  String
+  cnpj String
+  resetCode String?
+  sendedResetCodeAt DateTime?
   password  String
   avatar    String
   birthDate DateTime
@@ -89,8 +91,13 @@ model Pets {
   birthDate DateTime?
   rescuedAt DateTime?
   species    String
-  subSpecies String?
-  breed     String?
+
+  breedId   Int
+  breed     Breed @relation(fields: [breedId], references: [id], onDelete: NoAction)
+  otherBreed String?
+
+  sex      SexTypes
+  
   images    PetsImages[]
   fiv       Boolean?
   felv      Boolean?
@@ -110,6 +117,18 @@ model Pets {
 
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
+}
+
+enum SexTypes {
+  male
+  female
+  indeterminate
+}
+
+model Breed {
+  id Int @id @default(autoincrement())
+  breed String
+  pets Pets[]
 }
 
 model PetsImages {
@@ -164,6 +183,11 @@ model Adoption {
 
   petId     String
   pet Pets @relation(fields: [petId], references: [id], onDelete: Cascade)
+
+  OngFeedback String?
+  UserFeedback String?
+  RejectReason String?
+  CanceledReason String?
 
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
